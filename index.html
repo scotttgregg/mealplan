@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Dinner Plan</title>
+
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFEF9;
+    --brown: #3D2B1F;
+    --brown-mid: #6B4C3B;
+    --brown-light: #A07860;
+    --terracotta: #C4633A;
+    --terracotta-light: #E8886A;
+    --sage: #7A9E7E;
+    --sage-light: #A8C5AC;
+    --gold: #C9923A;
+    --gold-light: #E8C07A;
+    --border: #E5DDD5;
+    --text-muted: #8A7060;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--brown);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+  nav button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 1rem 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  nav button.active {
+    color: var(--terracotta);
+    border-bottom-color: var(--terracotta);
+    font-weight: 500;
+  }
+  nav button:hover { color: var(--brown); }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* HEADER */
+  .page-header {
+    background: var(--brown);
+    color: var(--cream);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+  }
+  .page-header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 0.5rem;
+  }
+  .page-header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+  .page-header p {
+    font-size: 14px;
+    color: var(--gold-light);
+    opacity: 0.8;
+  }
+
+  /* MEAL INDEX CARDS */
+  .meals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+  .meal-index-card {
+    background: var(--warm-white);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .meal-index-card:hover { background: var(--cream); }
+  .meal-index-card .card-type {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .type-crock { color: var(--sage); }
+  .type-quick { color: var(--terracotta); }
+  .meal-index-card h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--brown);
+  }
+  .meal-index-card .card-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .card-meta span { display: flex; align-items: center; gap: 4px; }
+  .meal-index-card .view-recipe {
+    margin-top: 0.5rem;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--terracotta);
+    text-decoration: none;
+  }
+
+  /* RECIPE DETAIL */
+  .recipe-back {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--warm-white);
+  }
+  .recipe-back button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .recipe-back button:hover { color: var(--brown); }
+
+  .recipe-hero {
+    background: var(--brown);
+    color: var(--cream);
+    padding: 2.5rem 1.5rem 2rem;
+  }
+  .recipe-hero .recipe-type {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .recipe-hero h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .recipe-stats {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .recipe-stats .stat { text-align: center; }
+  .recipe-stats .stat-val {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.4rem;
+    color: var(--gold-light);
+    display: block;
+  }
+  .recipe-stats .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+  }
+
+  .recipe-body {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .recipe-section-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--terracotta);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ingredients-list {
+    list-style: none;
+    margin-bottom: 2rem;
+  }
+  .ingredients-list li {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+    display: flex;
+    gap: 1rem;
+  }
+  .ingredients-list li:last-child { border-bottom: none; }
+  .ing-amount {
+    font-weight: 500;
+    color: var(--brown-mid);
+    min-width: 80px;
+  }
+
+  .steps-list {
+    list-style: none;
+    margin-bottom: 2rem;
+  }
+  .steps-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .steps-list li:last-child { border-bottom: none; }
+  .step-num {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    color: var(--border);
+    line-height: 1;
+    min-width: 2rem;
+  }
+
+  .baby-tip {
+    background: var(--sage-light);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 13px;
+    color: var(--brown);
+  }
+  .baby-tip strong { font-weight: 500; color: var(--sage); }
+
+  /* GROCERY LIST */
+  .grocery-header {
+    background: var(--brown);
+    color: var(--cream);
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  .grocery-header h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+  }
+  .grocery-header p { font-size: 13px; opacity: 0.7; margin-bottom: 1.5rem; }
+
+  .grocery-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-clear {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: var(--cream);
+    padding: 8px 20px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-clear:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.15);
+    border-radius: 100px;
+    height: 4px;
+    margin: 1.5rem 1.5rem 0;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--gold-light);
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+
+  .grocery-body { padding: 1.5rem; max-width: 700px; margin: 0 auto; }
+
+  .grocery-cat { margin-bottom: 2rem; }
+  .grocery-cat-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--terracotta);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .grocery-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .grocery-item:last-child { border-bottom: none; }
+  .grocery-item input[type="checkbox"] { display: none; }
+  .check-box {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+    background: var(--warm-white);
+  }
+  .check-box svg { display: none; }
+  .grocery-item.checked .check-box {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .grocery-item.checked .check-box svg { display: block; }
+  .grocery-item.checked .item-label {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+  .item-label { font-size: 15px; }
+  .progress-text {
+    font-size: 12px;
+    opacity: 0.6;
+    text-align: center;
+    margin-top: 0.25rem;
+    color: var(--gold-light);
+  }
+
+  @media (max-width: 480px) {
+    .recipe-stats { gap: 1rem; }
+    .page-header { padding: 2rem 1rem 1.5rem; }
+    .recipe-hero { padding: 1.5rem 1rem; }
+    .recipe-body { padding: 1.5rem 1rem; }
+    .grocery-body { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">Dinner rotation</div>
+  <h1>Family Meal Plan</h1>
+  <p>7 meals · 4 adults + 1 toddler · High protein, affordable</p>
+</div>
+
+<nav id="main-nav">
+  <button class="active" onclick="showSection('meals')">All Meals</button>
+  <button onclick="showSection('grocery')">Grocery List</button>
+</nav>
+
+<!-- MEALS INDEX -->
+<div id="section-meals" class="section active">
+  <div class="meals-grid" id="meals-grid"></div>
+</div>
+
+<!-- RECIPE DETAIL -->
+<div id="section-recipe" class="section">
+  <div class="recipe-back"><button onclick="backToMeals()">← Back to meals</button></div>
+  <div id="recipe-content"></div>
+</div>
+
+<!-- GROCERY LIST -->
+<div id="section-grocery" class="section">
+  <div class="grocery-header">
+    <h2>Grocery List</h2>
+    <p>Tap items to check them off as you shop</p>
+    <div class="grocery-controls">
+      <button class="btn-clear" onclick="clearChecks()">Clear all checks</button>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <p class="progress-text" id="progress-text">0 of 0 items</p>
+  </div>
+  <div class="grocery-body" id="grocery-body"></div>
+</div>
+
+<script>
+const meals = [
+  {
+    id: 'tacos',
+    title: 'Pulled Chicken Tacos',
+    type: 'crock',
+    typeLabel: 'Crock Pot',
+    time: '4–6 hrs',
+    protein: '45g',
+    cost: '~$10',
+    serve: 'Serve with tortillas, rice, or both',
+    description: 'Tender pulled chicken with smoky seasoning. Easy crowd-pleaser.',
+    baby: 'Pull out some plain chicken before adding salsa. Shred fine and serve with soft rice.',
+    ingredients: [
+      { amount: '2½ lb', item: 'boneless chicken breasts' },
+      { amount: '1 cup', item: 'salsa (jarred, any heat)' },
+      { amount: '1 can', item: 'diced tomatoes, drained' },
+      { amount: '1 tsp', item: 'chili powder' },
+      { amount: '1 tsp', item: 'cumin' },
+      { amount: '½ tsp', item: 'garlic powder' },
+      { amount: '½ tsp', item: 'smoked paprika' },
+      { amount: '½ tsp', item: 'salt' },
+      { amount: 'to serve', item: 'tortillas, cheese, sour cream, avocado' },
+    ],
+    steps: [
+      'Place chicken breasts in the crock pot in a single layer.',
+      'Mix together salsa, diced tomatoes, and all spices. Pour over chicken.',
+      'Cook on LOW 4–6 hours or HIGH 2.5–3 hours, until chicken shreds easily.',
+      'Shred with two forks directly in the pot and stir to coat in juices.',
+      'Serve in tortillas with your favorite toppings, or over rice.',
+    ]
+  },
+  {
+    id: 'chili',
+    title: 'Beef & Bean Chili',
+    type: 'crock',
+    typeLabel: 'Crock Pot',
+    time: '6–8 hrs',
+    protein: '42g',
+    cost: '~$12',
+    serve: 'Serve over rice or with cornbread',
+    description: 'Hearty, filling chili. High fiber, high protein, low effort.',
+    baby: 'Scoop out some beans and soft beef before serving, mash lightly with a fork.',
+    ingredients: [
+      { amount: '2 lb', item: 'ground beef (80/20)' },
+      { amount: '2 cans', item: 'kidney beans, drained' },
+      { amount: '1 can', item: 'diced tomatoes' },
+      { amount: '1 can', item: 'tomato paste (small, 6 oz)' },
+      { amount: '1', item: 'yellow onion, diced' },
+      { amount: '3 cloves', item: 'garlic, minced' },
+      { amount: '1 cup', item: 'beef broth' },
+      { amount: '2 tsp', item: 'chili powder' },
+      { amount: '1 tsp', item: 'cumin' },
+      { amount: '1 tsp', item: 'smoked paprika' },
+      { amount: '½ tsp', item: 'salt' },
+    ],
+    steps: [
+      'Brown ground beef in a skillet over medium-high heat, breaking it up. Drain fat.',
+      'Add browned beef to crock pot along with all remaining ingredients. Stir well.',
+      'Cook on LOW 6–8 hours or HIGH 3–4 hours.',
+      'Taste and adjust salt before serving.',
+      'Serve over white rice or with cornbread. Top with shredded cheese and sour cream.',
+    ]
+  },
+  {
+    id: 'honeygarlicchicken',
+    title: 'Honey Garlic Chicken Thighs',
+    type: 'crock',
+    typeLabel: 'Crock Pot',
+    time: '4–5 hrs',
+    protein: '44g',
+    cost: '~$9',
+    serve: 'Serve over rice with steamed broccoli',
+    description: 'Sweet-savory glazed chicken thighs. Family favorite, mild enough for toddlers.',
+    baby: 'Sauce is mild and slightly sweet — great for babies. Shred a thigh over soft rice.',
+    ingredients: [
+      { amount: '3 lb', item: 'bone-in chicken thighs' },
+      { amount: '⅓ cup', item: 'honey' },
+      { amount: '¼ cup', item: 'low-sodium soy sauce' },
+      { amount: '4 cloves', item: 'garlic, minced' },
+      { amount: '1 tbsp', item: 'tomato paste' },
+      { amount: '1 tsp', item: 'sesame oil (optional)' },
+      { amount: '½ tsp', item: 'garlic powder' },
+      { amount: 'to serve', item: 'cooked white rice, steamed broccoli' },
+    ],
+    steps: [
+      'Whisk together honey, soy sauce, minced garlic, tomato paste, sesame oil, and garlic powder.',
+      'Place chicken thighs in crock pot skin-side up. Pour sauce over the top.',
+      'Cook on LOW 4–5 hours. Chicken is done when it reaches 165°F and pulls from the bone easily.',
+      'Optional: transfer chicken to a sheet pan and broil for 3–4 minutes to caramelize the skin.',
+      'Spoon the sauce from the crock pot over rice and serve with steamed broccoli.',
+    ]
+  },
+  {
+    id: 'beansoup',
+    title: 'White Bean & Sausage Soup',
+    type: 'crock',
+    typeLabel: 'Crock Pot',
+    time: '6–8 hrs',
+    protein: '38g',
+    cost: '~$10',
+    serve: 'Serve with crusty bread',
+    description: 'Cozy, filling soup. One of the easiest on this list.',
+    baby: 'Soft beans and tender sausage are great for babies. Mash a few beans if needed.',
+    ingredients: [
+      { amount: '1 pkg (14 oz)', item: 'smoked sausage or kielbasa, sliced' },
+      { amount: '2 cans', item: 'white cannellini beans, drained' },
+      { amount: '1', item: 'yellow onion, diced' },
+      { amount: '3 cloves', item: 'garlic, minced' },
+      { amount: '2', item: 'carrots, sliced into coins' },
+      { amount: '2 stalks', item: 'celery, sliced (optional)' },
+      { amount: '4 cups', item: 'low-sodium chicken broth' },
+      { amount: '1 tsp', item: 'Italian seasoning' },
+      { amount: '2 cups', item: 'baby spinach or chopped kale' },
+      { amount: 'to taste', item: 'salt, pepper, red pepper flakes' },
+    ],
+    steps: [
+      'Add sausage, beans, onion, garlic, carrots, and celery to the crock pot.',
+      'Pour in chicken broth and add Italian seasoning. Stir to combine.',
+      'Cook on LOW 6–8 hours or HIGH 3–4 hours.',
+      'Stir in spinach or kale in the last 15 minutes of cooking until wilted.',
+      'Taste and season with salt, pepper, and red pepper flakes. Serve with crusty bread.',
+    ]
+  },
+  {
+    id: 'potroast',
+    title: 'Classic Pot Roast',
+    type: 'crock',
+    typeLabel: 'Crock Pot',
+    time: '8 hrs',
+    protein: '48g',
+    cost: '~$14',
+    serve: 'Everything cooks in one pot',
+    description: 'The ultimate crock pot meal. Set it before work, dinner is done.',
+    baby: 'Beef and veggies are very soft after 8 hours. Just shred the beef and serve.',
+    ingredients: [
+      { amount: '3–4 lb', item: 'chuck roast' },
+      { amount: '1 lb', item: 'baby potatoes or russets, halved' },
+      { amount: '3', item: 'large carrots, cut into chunks' },
+      { amount: '1', item: 'yellow onion, quartered' },
+      { amount: '4 cloves', item: 'garlic, smashed' },
+      { amount: '2 cups', item: 'low-sodium beef broth' },
+      { amount: '2 tbsp', item: 'Worcestershire sauce' },
+      { amount: '1 tsp', item: 'garlic powder' },
+      { amount: '1 tsp', item: 'onion powder' },
+      { amount: '1 tsp', item: 'smoked paprika' },
+      { amount: 'to taste', item: 'salt and pepper' },
+    ],
+    steps: [
+      'Season chuck roast generously on all sides with salt, pepper, garlic powder, onion powder, and smoked paprika.',
+      'Optional but recommended: sear the roast in a hot skillet with oil for 2–3 min per side for extra flavor.',
+      'Place potatoes, carrots, onion, and garlic on the bottom of the crock pot.',
+      'Set the roast on top of the vegetables.',
+      'Mix beef broth and Worcestershire sauce, pour around (not over) the roast.',
+      'Cook on LOW 8–10 hours. The roast is done when it shreds easily with a fork.',
+      'Shred the beef and serve with the vegetables and cooking juices spooned over the top.',
+    ]
+  },
+  {
+    id: 'sheetpan',
+    title: 'Sheet Pan Sausage & Veggies',
+    type: 'quick',
+    typeLabel: 'Quick Oven',
+    time: '25 min',
+    protein: '35g',
+    cost: '~$10',
+    serve: 'Serve over rice',
+    description: 'Fast, easy, minimal cleanup. Great when you forget the crock pot.',
+    baby: 'Roasted veggies and sausage are soft and easy. Cut into small pieces.',
+    ingredients: [
+      { amount: '1 pkg (14 oz)', item: 'smoked sausage, sliced into coins' },
+      { amount: '2', item: 'bell peppers, chopped' },
+      { amount: '2', item: 'zucchini, sliced' },
+      { amount: '1', item: 'yellow onion, cut into wedges' },
+      { amount: '2 tbsp', item: 'olive oil' },
+      { amount: '1 tsp', item: 'garlic powder' },
+      { amount: '1 tsp', item: 'smoked paprika' },
+      { amount: '½ tsp', item: 'onion powder' },
+      { amount: 'to taste', item: 'salt and pepper' },
+    ],
+    steps: [
+      'Preheat oven to 425°F.',
+      'Slice sausage and chop all vegetables. Add everything to a large sheet pan.',
+      'Drizzle with olive oil and sprinkle on all spices. Toss to coat.',
+      'Spread into a single layer — don\'t crowd the pan.',
+      'Roast for 20–25 minutes, flipping once halfway through, until veggies are slightly charred at edges.',
+      'Serve over white rice.',
+    ]
+  },
+  {
+    id: 'friedrice',
+    title: 'Egg & Veggie Fried Rice',
+    type: 'quick',
+    typeLabel: 'Quick Stovetop',
+    time: '20 min',
+    protein: '28g',
+    cost: '~$5',
+    serve: 'Best with day-old leftover rice',
+    description: 'Budget winner. Use leftover rice from another night for the best texture.',
+    baby: 'Eggs, rice, and veggies are all great for babies. Easy to serve as-is.',
+    ingredients: [
+      { amount: '4 cups', item: 'cooked rice (day-old or fresh, cooled)' },
+      { amount: '4', item: 'large eggs' },
+      { amount: '1 cup', item: 'frozen peas and corn' },
+      { amount: '3', item: 'green onions, sliced' },
+      { amount: '3 cloves', item: 'garlic, minced' },
+      { amount: '3 tbsp', item: 'low-sodium soy sauce' },
+      { amount: '1 tbsp', item: 'sesame oil' },
+      { amount: '2 tbsp', item: 'olive or vegetable oil' },
+      { amount: 'to taste', item: 'salt and pepper' },
+    ],
+    steps: [
+      'Heat a large skillet or wok over high heat. Add oil.',
+      'Add garlic and green onions, stir-fry 30 seconds until fragrant.',
+      'Add frozen peas and corn, cook 2 minutes.',
+      'Push everything to the side. Crack eggs into the empty space and scramble until just set, then mix into the veggies.',
+      'Add rice to the pan, breaking up any clumps. Stir-fry for 3–4 minutes until heated through.',
+      'Drizzle soy sauce and sesame oil over everything. Toss well. Taste and adjust seasoning.',
+      'Serve immediately.',
+    ]
+  },
+];
+
+const grocery = [
+  {
+    cat: 'Proteins',
+    items: ['Boneless chicken breasts (3 lb)', 'Bone-in chicken thighs (3 lb)', 'Ground beef 80/20 (2 lb)', 'Chuck roast (3–4 lb)', 'Smoked sausage / kielbasa (2 pkgs)', 'Eggs (1 dozen)']
+  },
+  {
+    cat: 'Canned & Dry Goods',
+    items: ['Kidney beans, canned (2 cans)', 'White cannellini beans, canned (2 cans)', 'Diced tomatoes, canned (2 cans)', 'Tomato paste, small can (6 oz)', 'Low-sodium chicken broth (64 oz)', 'Low-sodium beef broth (32 oz)', 'White rice (5 lb bag)', 'Soy sauce (low-sodium)', 'Honey', 'Worcestershire sauce']
+  },
+  {
+    cat: 'Produce',
+    items: ['Yellow onions (3)', 'Garlic (1 head)', 'Carrots (2 lb bag)', 'Russet or baby potatoes (3 lb)', 'Broccoli (1 head or frozen bag)', 'Bell peppers (2)', 'Zucchini (2)', 'Green onions / scallions (1 bunch)', 'Baby spinach or kale (1 bag)', 'Frozen peas and corn (1 bag)']
+  },
+  {
+    cat: 'Spices & Pantry',
+    items: ['Olive oil', 'Sesame oil', 'Chili powder', 'Cumin', 'Garlic powder', 'Onion powder', 'Smoked paprika', 'Italian seasoning', 'Red pepper flakes', 'Salt & pepper']
+  },
+  {
+    cat: 'Taco Night Extras',
+    items: ['Flour or corn tortillas', 'Shredded cheese', 'Sour cream', 'Salsa (jarred)', 'Avocado or guacamole']
+  },
+  {
+    cat: 'Soup & Bread',
+    items: ['Crusty bread or dinner rolls']
+  },
+];
+
+// Render meal index
+function renderMeals() {
+  const grid = document.getElementById('meals-grid');
+  grid.innerHTML = meals.map(m => `
+    <div class="meal-index-card" onclick="showRecipe('${m.id}')">
+      <div class="card-type type-${m.type}">${m.typeLabel} · ${m.time}</div>
+      <h3>${m.title}</h3>
+      <p style="font-size:13px; color:var(--text-muted);">${m.description}</p>
+      <div class="card-meta">
+        <span>⬤ ${m.protein} protein</span>
+        <span>⬤ ${m.cost}</span>
+      </div>
+      <div class="view-recipe">View recipe →</div>
+    </div>
+  `).join('');
+}
+
+// Render recipe detail
+function showRecipe(id) {
+  const m = meals.find(x => x.id === id);
+  const html = `
+    <div class="recipe-hero">
+      <div class="recipe-type type-${m.type}" style="color:var(--gold-light); font-size:10px; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.5rem;">${m.typeLabel}</div>
+      <h2>${m.title}</h2>
+      <div class="recipe-stats">
+        <div class="stat"><span class="stat-val">${m.time}</span><span class="stat-label">Cook time</span></div>
+        <div class="stat"><span class="stat-val">${m.protein}</span><span class="stat-label">Protein / serving</span></div>
+        <div class="stat"><span class="stat-val">${m.cost}</span><span class="stat-label">Est. cost</span></div>
+      </div>
+    </div>
+    <div class="recipe-body">
+      <p style="color:var(--text-muted); font-size:14px; margin-bottom:1.5rem;">${m.serve}</p>
+      <div class="baby-tip"><strong>For baby:</strong> ${m.baby}</div>
+      <div class="recipe-section-title">Ingredients</div>
+      <ul class="ingredients-list">
+        ${m.ingredients.map(i => `<li><span class="ing-amount">${i.amount}</span><span>${i.item}</span></li>`).join('')}
+      </ul>
+      <div class="recipe-section-title">Instructions</div>
+      <ol class="steps-list">
+        ${m.steps.map((s, i) => `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`).join('')}
+      </ol>
+    </div>
+  `;
+  document.getElementById('recipe-content').innerHTML = html;
+  document.getElementById('section-meals').classList.remove('active');
+  document.getElementById('section-recipe').classList.remove('active');
+  document.getElementById('section-grocery').classList.remove('active');
+  document.getElementById('section-recipe').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function backToMeals() {
+  document.getElementById('section-recipe').classList.remove('active');
+  document.getElementById('section-meals').classList.add('active');
+  setNav('meals');
+  window.scrollTo(0, 0);
+}
+
+// Render grocery list
+let checked = {};
+
+function renderGrocery() {
+  const body = document.getElementById('grocery-body');
+  body.innerHTML = grocery.map((cat, ci) => `
+    <div class="grocery-cat">
+      <div class="grocery-cat-title">${cat.cat}</div>
+      ${cat.items.map((item, ii) => {
+        const key = `${ci}-${ii}`;
+        const isChecked = checked[key];
+        return `
+          <div class="grocery-item${isChecked ? ' checked' : ''}" onclick="toggleItem('${key}', this)">
+            <div class="check-box">
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                <path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="item-label">${item}</span>
+          </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function toggleItem(key, el) {
+  checked[key] = !checked[key];
+  el.classList.toggle('checked', checked[key]);
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = grocery.reduce((s, c) => s + c.items.length, 0);
+  const done = Object.values(checked).filter(Boolean).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} of ${total} items`;
+}
+
+function clearChecks() {
+  checked = {};
+  document.querySelectorAll('.grocery-item').forEach(el => el.classList.remove('checked'));
+  updateProgress();
+}
+
+// Nav
+function showSection(name) {
+  ['meals','recipe','grocery'].forEach(s => {
+    document.getElementById('section-' + s).classList.remove('active');
+  });
+  if (name === 'recipe') {
+    document.getElementById('section-recipe').classList.add('active');
+  } else {
+    document.getElementById('section-' + name).classList.add('active');
+  }
+  setNav(name);
+  window.scrollTo(0, 0);
+}
+
+function setNav(name) {
+  document.querySelectorAll('nav button').forEach((btn, i) => {
+    btn.classList.remove('active');
+  });
+  const map = { meals: 0, grocery: 1 };
+  if (map[name] !== undefined) {
+    document.querySelectorAll('nav button')[map[name]].classList.add('active');
+  }
+}
+
+renderMeals();
+renderGrocery();
+</script>
+</body>
+</html>
